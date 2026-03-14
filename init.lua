@@ -39,8 +39,13 @@ minetest.register_on_mods_loaded(function()
         end
         ::continue::
     end
-    minetest.log("action","[SafeSaw] Safe blocks detected: "..tostring(#(safe_blocks)))
-end)
+        -- підрахунок блоків
+        local count = 0
+        for _ in pairs(safe_blocks) do
+            count = count + 1
+        end
+        minetest.log("action","[SafeSaw] Safe blocks detected: "..count)
+    end)
 
 -- Генерація вихідних предметів (тільки існуючі форми)
 local function generate_output(block_name, max_offered)
@@ -108,10 +113,10 @@ local function update_inventory(inv, player_name, delta)
         return
     end
 
-    local modname_prefix = node_name:match("^default:") and "moreblocks" or node_name:split(":")[1]
+    local nodename = node_name:match(":(.*)")
 
     inv:set_list("input", {node_name.." "..math.floor(amount/8)})
-    inv:set_list("micro", {modname_prefix..":micro_"..node_name:split(":")[2].." "..(amount%8)})
+    inv:set_list("micro", {"moreblocks:micro_"..nodename.." "..(amount%8)})
     inv:set_list("output", generate_output(node_name, user.max_offered))
 end
 
